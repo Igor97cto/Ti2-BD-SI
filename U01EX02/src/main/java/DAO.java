@@ -172,7 +172,7 @@ public class DAO
 			
 			usr= new User(rs.getInt("id"), rs.getString("name"),
 					rs.getString("lastname"), rs.getString("email"),
-					rs.getString("password"), rs.getString("gender").charAt(0),
+					rs.getInt("password"), rs.getString("gender").charAt(0),
 					rs.getDate("birthday").toLocalDate());
 			
 			pst.close();			
@@ -199,18 +199,60 @@ public class DAO
 					+ "?" 
 					+ "WHERE id= " + usr.getId() + ";" ;
 		
+		if(usr != null)
+		{
+			try
+			{
+				PreparedStatement pst= conn.prepareStatement(query);
+				pst.setObject(1, usr.getLdt());
+				pst.executeUpdate();
+				pst.close();
+				status= true;
+			} catch (SQLException u)
+			{
+				throw new RuntimeException(u);
+			}
+		}
+		
+		return status;
+	}
+	
+	
+	public User[] list()
+	{
+		User[] usr = null;
+		String query= "SELECT * FROM \"public\".\"User\""; 
+		
 		try
 		{
-			PreparedStatement pst= conn.prepareStatement(query);
-			pst.setObject(1, usr.getLdt());
-			pst.executeUpdate();
-			pst.close();
-			status= true;
-		} catch (SQLException u)
-		{
-			throw new RuntimeException(u);
-		}
+			PreparedStatement pst= conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
 			
-		return status;
+			ResultSet rs = pst.executeQuery();
+
+			if(rs.next())
+			{
+				rs.last();
+				usr = new User[rs.getRow()];
+				rs.beforeFirst();
+
+				for(int i = 0; rs.next(); i++)
+				{
+					usr[i]= new User(rs.getInt("id"), rs.getString("name"),
+							rs.getString("lastname"), rs.getString("email"),
+							rs.getInt("password"), 
+							rs.getString("gender").charAt(0),
+							rs.getDate("birthday").toLocalDate());
+				}
+			}
+			
+			pst.close();
+		} catch (Exception e) 
+		{
+			System.err.println(e.getMessage());
+		}
+		
+		return usr;
 	}
 }

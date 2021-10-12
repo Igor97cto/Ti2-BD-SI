@@ -6,7 +6,7 @@ public class User
 	private String name;
 	private String lastname;
 	private String email;
-	private String password;
+	private int password;
 	private char gender;
 	private LocalDate ldt;
 
@@ -17,15 +17,15 @@ public class User
 		this.name = name;
 		this.lastname = lastname;
 		this.email = email;
-		this.password = password;
+		this.password = password.hashCode();
 		this.gender = gender;
 		this.ldt = LocalDate.of(year, month, day);
 	}
 
 	public User(int id, String name, String lastname, String email,
-			String password, char gender, LocalDate ldt)
+			int password, char gender, LocalDate ldt)
 	{
-		this.id = id;
+		this.id= id;
 		this.name = name;
 		this.lastname = lastname;
 		this.email = email;
@@ -59,7 +59,7 @@ public class User
 	}
 
 
-	public String getPassword()
+	public int getPassword()
 	{
 		return password;
 	}
@@ -69,20 +69,38 @@ public class User
 	{
 		return gender;
 	}
-
-
-	public LocalDate getLdt()
+	
+	
+	public int getBirthDay()
 	{
-		return ldt;
+		return ldt.getDayOfMonth();
+	}
+	
+	
+	public int getBirthMonth()
+	{
+		return ldt.getMonth().getValue();
+	}
+	
+	
+	public int getBirthYear()
+	{
+		return ldt.getYear();
 	}
 	
 	
 	public String getBirthday()
 	{
-		return ldt.getDayOfMonth() + "-" + ldt.getMonth() + "-" + ldt.getYear();
+		return getBirthDay() + "-" + getBirthMonth() + "-" + getBirthYear();
+	}
+	
+	
+	public LocalDate getLdt()
+	{
+		return ldt;
 	}
 
-
+	
 	public void setId(int id)
 	{
 		this.id = id;
@@ -109,7 +127,7 @@ public class User
 
 	public void setPassword(String password)
 	{
-		this.password = password;
+		this.password = password.hashCode();
 	}
 
 
@@ -117,17 +135,35 @@ public class User
 	{
 		this.gender = gender;
 	}
-
-
-	public void setLdt(LocalDate ldt)
+	
+	
+	public void setBirthDay(int day)
 	{
-		this.ldt = ldt;
+		ldt = LocalDate.of(getBirthYear(), getBirthMonth(), day);
 	}
 	
 	
-	public void serBirthday(int day, int month, int year)
+	public void setBirthMonth(int month)
+	{
+		ldt = LocalDate.of(getBirthYear(), month, getBirthDay());
+	}
+	
+	
+	public void setBirthYear(int year)
+	{
+		ldt = LocalDate.of(year, getBirthMonth(), getBirthDay());
+	}
+	
+	
+	public void setBirthday(int day, int month, int year)
 	{
 		ldt = LocalDate.of(year, month, day);
+	}
+	
+	
+	public void setLdt(LocalDate ldt)
+	{
+		this.ldt= ldt;
 	}
 	
 	

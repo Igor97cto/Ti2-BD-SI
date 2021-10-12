@@ -173,7 +173,6 @@ public class User
 		return "Id: " + getId() + "\n"
 				+ "Nome: " + getName() + " " + getLastname() + "\n"
 				+ "E-mail: " + getEmail() + "\n"
-				+ "Senha: " + getPassword() + "\n"
 				+ "Sexo: " + getGender() + "\n"
 				+ "Data de nascimento: " + getBirthday() + "\n";
 	}

@@ -19,7 +19,10 @@ public class DAO
 		String serverName = "localhost";
 		String mydatabase = "teste";
 		int port = 5432;
-		String url = "jdbc:postgresql://" + serverName + ":" + port + "/" + mydatabase;
+		String url = "jdbc:postgresql://" 
+					+ serverName + ":"
+					+ port + "/" 
+					+ mydatabase;
 		String username = "ti2cc";
 		String password = "ti@cc";
 		boolean status = false;
@@ -33,11 +36,14 @@ public class DAO
 		}
 		catch (ClassNotFoundException e)
 		{
-			System.err.println("Conexão NÃO efetuada com o postgres -- Driver não encontrado -- " + e.getMessage());
+			System.err.println("Conexão NÃO efetuada com o postgres"
+					+ " -- Driver não encontrado -- "
+					+ e.getMessage());
 		}
 		catch (SQLException e)
 		{
-			System.err.println("Conexão NÃO efetuada com o postgres -- " + e.getMessage());
+			System.err.println("Conexão NÃO efetuada com o postgres -- "
+					+ e.getMessage());
 		}
 
 		return status;
@@ -69,7 +75,7 @@ public class DAO
 				    + "name text, "
 				    + "lastname text, "
 				    + "email text NOT NULL, "
-				    + "password text NOT NULL, "
+				    + "password integer NOT NULL, "
 				    + "gender character(1), "
 				    + "birthday date"
 				    + ")";
@@ -91,13 +97,33 @@ public class DAO
 	public boolean delete(int id)
 	{
 		boolean status= false;
-		String query= "DELETE * FROM \"public\".\"User\""
+		String query= "DELETE FROM \"public\".\"User\""
 					+ "WHERE id = " + id;
 		
 		try
 		{
 			Statement st= conn.createStatement();
 			st.executeUpdate(query);
+			st.close();
+			status= true;
+		} catch (SQLException u)
+		{
+			throw new RuntimeException(u);
+		}
+		
+		return status;
+	}
+	
+	public boolean drop()
+	{
+		boolean status= false;
+		String query= "DROP TABLE IF EXISTS \"public\".\"User\""
+						+ "CASCADE";
+		
+		try
+		{
+			Statement st= conn.createStatement();
+			st.execute(query);
 			st.close();
 			status= true;
 		} catch (SQLException u)
@@ -170,6 +196,8 @@ public class DAO
 			
 			ResultSet rs = pst.executeQuery();
 			
+			rs.next();
+			
 			usr= new User(rs.getInt("id"), rs.getString("name"),
 					rs.getString("lastname"), rs.getString("email"),
 					rs.getInt("password"), rs.getString("gender").charAt(0),
@@ -189,15 +217,15 @@ public class DAO
 	{
 		boolean status= false;
 		
-		String query= "UPDATE \"public\".\"User\" SET "
-					+ usr.getId() + ", "
-					+ "'" + usr.getName() + "', "
-					+ "'" + usr.getLastname() + "', "
-					+ "'" + usr.getEmail() + "', "
-					+ "'" + usr.getPassword() + "', "
-					+ "'" + usr.getGender() + "', "
-					+ "?" 
-					+ "WHERE id= " + usr.getId() + ";" ;
+		String query= "UPDATE \"public\".\"User\" SET \n"
+					+ "id= "  + usr.getId() + ", \n"
+					+ "name= '" + usr.getName() + "', \n"
+					+ "lastname= '" + usr.getLastname() + "', \n"
+					+ "email= '" + usr.getEmail() + "', \n"
+					+ "password= '" + usr.getPassword() + "', \n"
+					+ "gender= '" + usr.getGender() + "', \n"
+					+ "birthday= ? \n" 
+					+ "WHERE id= " + usr.getId() + "; \n" ;
 		
 		if(usr != null)
 		{

@@ -6,6 +6,24 @@ public class Main
 	static DAO dao;
 	static User usr0;
 	
+	public static boolean delete()
+	{
+		User usr= null;
+		boolean status= false;	
+		
+		System.out.println("Insira a id a ser deletada: ");
+		usr= dao.read(scn.nextInt());
+		
+		if(usr!= null)
+		{
+			System.out.println("====DELETADO====");
+			System.out.println(usr);
+			status= dao.delete(usr.getId());
+		}
+		
+		return status;
+	}
+	
 	public static User getUserInfo() throws Exception
 	{
 		String name;
@@ -17,6 +35,7 @@ public class Main
 		int month;
 		int year;
 		
+		scn.nextLine();
 		System.out.print("Digite o nome: ");
 		name= scn.nextLine();
 		System.out.print("Digite o sobrenome: ");
@@ -28,7 +47,7 @@ public class Main
 		System.out.print("Digite o sexo (M ou F):");
 		gender= scn.next().charAt(0);
 		
-		if(gender != 'M' || gender != 'F')
+		if(gender != 'M' && gender != 'F')
 		{
 			throw new Exception("Sexo precisa ser M ou F!");
 		}
@@ -56,6 +75,8 @@ public class Main
 			{
 				System.out.println(aux);
 			}
+			
+			status= true;
 		}
 		
 		return status;
@@ -71,13 +92,24 @@ public class Main
 				return dao.insert(getUserInfo());
 			
 			case 2:
+
 				System.out.println("=====ATUALIZAR====\n");
 				return dao.update(updateUser());
 				
 			case 3:
 				System.out.println("======LISTAR======\n");
 				return listUsers();
+				
+			case 4:
+				System.out.println("======EXCLUIR=====\n");
+				return delete();
+				
+			case 5:
+				System.out.println("=======SAIR=======\n");
+				return false;
+				
 			default:
+				scn.nextLine();
 				System.out.println("Opção inválida!");
 				return true;
 		}
@@ -86,13 +118,14 @@ public class Main
 	
 	public static int showMenu()
 	{
-		System.out.println(
-				"========MENU========\n"
+		System.out.print(
+				"\n========MENU========\n"
 				+ "1- Inserir\n"
 				+ "2- Atualizar\n"
 				+ "3- Listar\n"
 				+ "4- Excluir\n"
-				+ "\n>"
+				+ "5- Sair\n"
+				+ "> "
 				);
 		
 		return scn.nextInt();
@@ -110,7 +143,7 @@ public class Main
 							+ "6- Dia de nascimento\n"
 							+ "7- Mês de nascimento\n"
 							+ "8- Ano de nascimento\n"
-							+ "\n>");
+							+ "> ");
 		
 		return scn.nextInt();
 	}
@@ -132,26 +165,31 @@ public class Main
 			switch(opt)
 			{
 				case 1:
+					scn.nextLine();
 					System.out.print("Insira o novo nome: ");
 					usr.setName(scn.next());
 					break;
 					
 				case 2:
+					scn.nextLine();
 					System.out.print("Insira o novo Sobrenome: ");
 					usr.setLastname(scn.nextLine());
 					break;
 					
 				case 3:
+					scn.nextLine();
 					System.out.print("Insira o novo e-mail: ");
 					usr.setEmail(scn.next());
 					break;
 					
 				case 4:
+					scn.nextLine();
 					System.out.print("Insira a nova senha: ");
 					usr.setPassword(scn.nextLine());
 					break;
 					
-				case 5:					
+				case 5:				
+					scn.nextLine();
 					System.out.print("Insira o novo sexo: ");
 					gender= scn.next().charAt(0);
 					
@@ -164,17 +202,20 @@ public class Main
 					break;
 					
 				case 6:
+					scn.nextLine();
 					System.out.print("Insira o dia do nascimento: ");
 					usr.setBirthDay(scn.nextInt());
 					break;
 					
 				case 7:
+					scn.nextLine();
 					System.out.print("Insira o mês do nascimento: ");
 					usr.setBirthMonth(scn.nextInt());
 					break;
 					
 				case 8:
-					System.out.print("Insira o mês do nascimento: ");
+					scn.nextLine();
+					System.out.print("Insira o ano do nascimento: ");
 					usr.setBirthYear(scn.nextInt());
 					break;
 			}
@@ -185,15 +226,21 @@ public class Main
 	
 
 	public static void main(String[] args) throws Exception
-	{
-		usr0= new User("Igor", "de Castro e Carneiro", "igor97cto@outlook.com",
-				"dummy0", 'M', 17, 3, 1997);
-		
-		scn= new Scanner(System.in);
+	{	
+		boolean test= false;
 		dao= new DAO();
+		scn= new Scanner(System.in);
 		
-		dao.insert(usr0);
+		if(test)
+		{
+			if(dao.drop())
+			System.out.println("BD DELETADO!");
+		}
 		
-		listUsers();
+		while(setOperation(showMenu()));
+		
+		dao.close();
+		
+		//listUsers();
 	}
 }
